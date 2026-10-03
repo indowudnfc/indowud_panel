@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getTickets() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.LOADALLTICKETS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.LOADALLTICKETS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -20,7 +21,7 @@ export async function changeTicketStatus(ticketId, status) {
   try {
     const payload = { ticketId: ticketId, status: status };
     console.log(payload);
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CHANGETICKETSTATUS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CHANGETICKETSTATUS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

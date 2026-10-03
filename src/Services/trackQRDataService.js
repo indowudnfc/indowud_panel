@@ -1,14 +1,16 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
-export const getAllQRData = async (token, page) => {
+/** `filters` = { from?, to? } ISO timestamps on generation date; filtering runs on the server across all pages. */
+export const getAllQRData = async (token, page, filters = {}) => {
   try {
-    const response = await fetch(`${BASE_URL}${ENDPOINTS.GETALLQRDATA}`, {
+    const response = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLQRDATA}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ page }),
+      body: JSON.stringify({ page, ...(filters.from || filters.to ? { ...filters, dateField: "createdAt" } : {}) }),
     });
 
     if (!response.ok) {
@@ -25,7 +27,7 @@ export const getAllQRData = async (token, page) => {
 
 export async function searchQRByBatch(query) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.SEARCHQRBYBATCH}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.SEARCHQRBYBATCH}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

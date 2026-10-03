@@ -7,11 +7,12 @@ import {
   Mail,
   CheckCircle2,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { homePathFor } from "../utils/rbac";
 import logo from "../assets/logo_Indowud.png";
 
 const Login = () => {
-  const { login, handleForgotPassword, loading, error, setError } =
+  const { login, handleForgotPassword, loading, error, setError, isInitialized, isAuthenticated, role } =
     useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +24,9 @@ const Login = () => {
   const [resetError, setResetError] = useState("");
   const [resetSuccess, setResetSuccess] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  // Return to the page that sent the user here, if any.
+  const destinationFor = (role) => location.state?.from || homePathFor(role);
 
   // Load remembered email on component mount
   useEffect(() => {
@@ -54,7 +58,7 @@ const Login = () => {
     try {
       const userData = await login(email, password);
       if (userData) {
-        navigate("/dashboard");
+        navigate(destinationFor(userData.user.role), { replace: true });
       }
     } catch (err) {
       // Error is already handled in context, but we can add additional handling here if needed
@@ -101,7 +105,7 @@ const Login = () => {
 
       if (response) {
         setResetSuccess(true);
-        setResetMessage("Password reset link has been sent to your email!");
+        setResetMessage("If that email belongs to an admin account, a reset link is on its way.");
 
         // Auto redirect to login after 3 seconds
         setTimeout(() => {
@@ -127,6 +131,11 @@ const Login = () => {
     setResetSuccess(false);
     if (setError) setError("");
   };
+
+  // Already signed in (e.g. opened /login in a new tab).
+  if (isInitialized && isAuthenticated) {
+    return <Navigate to={destinationFor(role)} replace />;
+  }
 
   // Forgot Password Screen
   if (showForgotPassword) {

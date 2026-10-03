@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getAnnouncements(token) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETANNOUNCEMENTS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETANNOUNCEMENTS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function getAnnouncements(token) {
 
 export async function createAnnouncement(newAnnouncement) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATEANNOUNCEMENT}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATEANNOUNCEMENT}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -35,7 +36,7 @@ export async function createAnnouncement(newAnnouncement) {
 
 export async function deleteAnnouncementFromAdmin(announcementId) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETEANNOUNCEMENT}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETEANNOUNCEMENT}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

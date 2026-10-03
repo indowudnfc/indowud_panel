@@ -1,55 +1,35 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
-export async function loginToAdminPortal(email, password) {
-  try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.LOGIN}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+import { apiFetch, errorMessage } from "./apiClient.js";
 
-    if (!res.ok) throw new Error("Login failed");
-    return res.json();
-  } catch (error) {
-    console.log(error);
-    return false;
+async function post(path, body) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await errorMessage(res, "Request failed"));
+  return res.status === 204 ? null : res.json();
+}
+
+/** → { accessToken, refreshToken, admin } */
+export const loginToAdminPortal = (email, password) => post(ENDPOINTS.LOGIN, { email, password });
+
+/** Current admin, re-read from the server (role or status may have changed). */
+export async function getCurrentAdmin() {
+  const res = await apiFetch(ENDPOINTS.ME);
+  if (!res.ok) throw new Error(await errorMessage(res, "Session expired"));
+  return (await res.json()).admin;
+}
+
+export async function logoutFromAdminPortal(refreshToken) {
+  if (!refreshToken) return;
+  try {
+    await post(ENDPOINTS.LOGOUT, { refreshToken });
+  } catch {
+    // Signing out locally is what matters; the server session expires on its own.
   }
 }
 
-export async function getUserData(uid, token) {
-  try {
-    const res = await fetch(
-      `${BASE_URL}${ENDPOINTS.GETUSERDATA.replace(":uid", uid)}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (!res.ok) throw new Error("User data not found");
-    return res.json();
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
-export async function forgotPassword(email) {
-  try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.FORGETPASSWORD}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    });
+export const forgotPassword = (email) => post(ENDPOINTS.FORGETPASSWORD, { email });
 
-    if (!res.ok) throw new Error("Password reset request failed");
-    return res.json();
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
-}
+export const resetPassword = (token, password) => post(ENDPOINTS.RESETPASSWORD, { token, password });

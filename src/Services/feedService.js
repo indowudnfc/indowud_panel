@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getFeed() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLFEEDS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLFEEDS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +28,7 @@ export async function createFeed(feedData) {
       formData.append("imageFile", feedData.imageFile);
     }
 
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATEFEED}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATEFEED}`, {
       method: "POST",
       body: formData,
     });
@@ -89,7 +90,7 @@ export async function updateFeed(feedId, feedData, originalFeedData) {
       return { success: true, message: "No changes to update" };
     }
 
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.UPDATEFEED}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.UPDATEFEED}`, {
       method: "POST",
       body: formData,
     });
@@ -110,7 +111,7 @@ export async function updateFeed(feedId, feedData, originalFeedData) {
 }
 export async function deleteFeed(feedId) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETEFEED}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETEFEED}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

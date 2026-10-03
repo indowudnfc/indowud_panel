@@ -1,7 +1,8 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig";
+import { apiFetch } from "./apiClient.js";
 export async function getCustomers(token) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETCUSTOMERS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETCUSTOMERS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function getCustomers(token) {
 
 export async function blockCustomer(token, uid, isUserInActive) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.BLOCKCUSTOMER}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.BLOCKCUSTOMER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export async function blockCustomer(token, uid, isUserInActive) {
 
 export async function customerKYCVerification(token, uid, isKYCverifed) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.KYCVERIFICATION}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.KYCVERIFICATION}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export async function customerKYCVerification(token, uid, isKYCverifed) {
 
 export async function sendCustomerNotification(uid, message) {
   try {
-    const res = await fetch(
+    const res = await apiFetch(
       `${BASE_URL}${ENDPOINTS.SENDCUSTOMERNOTIFICATION}`,
       {
         method: "POST",
@@ -74,10 +75,9 @@ export async function sendCustomerNotification(uid, message) {
 
 export async function importCustomersData(formData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.IMPORTCUSTOMERSDATA}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.IMPORTCUSTOMERSDATA}`, {
       method: "POST",
       headers: {
-        "Content-Type": "multipart/form-data",
       },
       body: formData,
     });
@@ -97,7 +97,7 @@ export async function importCustomersData(formData) {
 }
 export async function addPointsToCustomer(token, uid, points) {
   try {
-    const res = await fetch(
+    const res = await apiFetch(
       `${BASE_URL}${ENDPOINTS.ADDPOINTSTOSPECIFICCUSTOMER}`,
       {
         method: "POST",

@@ -22,7 +22,7 @@ import ActionButtons from "../Components/Reusable/ActionButtons";
 import ExportButton from "../Components/export_button";
 import ImportCSVButton from "../Components/Import_button";
 import LoadingSpinner from "../Components/Reusable/LoadingSpinner";
-import { getCurrentUser, getCurrentUserRole, ROLES } from "../utils/rbac";
+import { getCurrentUser, getCurrentUserRole, ROLES, roleLabel } from "../utils/rbac";
 
 const StatusBadge = ({ status }) => {
   const getStatusColor = (status) => {
@@ -50,11 +50,11 @@ const StatusBadge = ({ status }) => {
 const RoleBadge = ({ role }) => {
   const getRoleColor = (role) => {
     switch (role) {
-      case "Super Admin":
+      case ROLES.SUPER_ADMIN:
         return "bg-red-100 text-red-800";
-      case "Admin":
+      case ROLES.ADMIN:
         return "bg-blue-100 text-blue-800";
-      case "QR Generate":
+      case ROLES.QR_GENERATE:
         return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -67,7 +67,7 @@ const RoleBadge = ({ role }) => {
         role
       )}`}
     >
-      {role}
+      {roleLabel(role)}
     </span>
   );
 };
@@ -283,9 +283,9 @@ const AdminUsers = () => {
               className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-sm"
             >
               <option value="All">All Roles</option>
-              <option value="Super Admin">Super Admin</option>
-              <option value="Admin">Admin</option>
-              <option value="QR Generate">QR Generate</option>
+              <option value={ROLES.SUPER_ADMIN}>{roleLabel(ROLES.SUPER_ADMIN)}</option>
+              <option value={ROLES.ADMIN}>{roleLabel(ROLES.ADMIN)}</option>
+              <option value={ROLES.QR_GENERATE}>{roleLabel(ROLES.QR_GENERATE)}</option>
             </select>
           </div>
 

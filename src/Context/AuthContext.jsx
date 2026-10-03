@@ -1,142 +1,131 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useCallback } from "react";
 import {
   loginToAdminPortal,
-  getUserData,
+  getCurrentAdmin,
+  logoutFromAdminPortal,
   forgotPassword,
+  resetPassword,
 } from "../Services/authService";
+import { tokenStore, setSessionExpiredHandler } from "../Services/apiClient";
 
 const AuthContext = createContext();
 
 export const useAuthContext = () => useContext(AuthContext);
 
+/** The rest of the panel reads `userData.user` (uid, firstName, lastName, email, role). */
+const toUserData = (admin) => ({
+  user: {
+    uid: admin.id,
+    firstName: admin.firstName,
+    lastName: admin.lastName,
+    email: admin.email,
+    phone: admin.phone,
+    role: admin.role,
+  },
+});
+
 export function AuthProvider({ children }) {
   const [userData, setUserData] = useState(null);
   const [token, setToken] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
-    const storedRefreshToken = localStorage.getItem("refreshToken");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken) {
-      setToken(storedToken);
-    }
-    if (storedRefreshToken) {
-      setRefreshToken(storedRefreshToken);
-    }
-    if (storedUser) {
-      try {
-        setUserData(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error parsing stored user data:", error);
-        localStorage.removeItem("user");
-      }
-    }
-
-    setIsInitialized(true);
+  const applySession = useCallback((admin) => {
+    const data = toUserData(admin);
+    setUserData(data);
+    setToken(tokenStore.access);
+    localStorage.setItem("user", JSON.stringify(data));
   }, []);
+
+  const clearSession = useCallback(() => {
+    tokenStore.clear();
+    setUserData(null);
+    setToken(null);
+  }, []);
+
+  // A refresh that fails mid-session (expired, revoked, account deactivated) signs the user out.
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      clearSession();
+      setError("Your session has expired. Please log in again.");
+    });
+  }, [clearSession]);
+
+  // On load, confirm the stored session with the server rather than trusting localStorage.
+  useEffect(() => {
+    (async () => {
+      if (tokenStore.refresh) {
+        try {
+          applySession(await getCurrentAdmin());
+        } catch {
+          clearSession();
+        }
+      }
+      setIsInitialized(true);
+    })();
+  }, [applySession, clearSession]);
 
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
-
     try {
-      const loginRes = await loginToAdminPortal(email, password);
-
-      if (!loginRes) {
-        const errorMessage = "Login failed - Invalid credentials";
-        setError(errorMessage);
-        setLoading(false);
-        throw new Error(errorMessage);
-      }
-
-      const idToken = loginRes.idToken;
-      const refreshToken = loginRes.refreshToken;
-
-      setToken(idToken);
-      setRefreshToken(refreshToken);
-
-      localStorage.setItem("authToken", idToken);
-      localStorage.setItem("refreshToken", refreshToken);
-
-      const userData = await getUserData(loginRes.uid, idToken);
-
-      if (!userData) {
-        const errorMessage = "User data not found";
-        setError(errorMessage);
-        setLoading(false);
-        throw new Error(errorMessage);
-      }
-
-      setUserData(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-      setError(null);
+      const session = await loginToAdminPortal(email, password);
+      tokenStore.set(session);
+      applySession(session.admin);
+      return toUserData(session.admin);
+    } catch (e) {
+      setError(e.message || "Login failed. Please check your credentials and try again.");
+      throw e;
+    } finally {
       setLoading(false);
-      return userData;
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoading(false);
-
-      const errorMessage =
-        error.message ||
-        "Login failed. Please check your credentials and try again.";
-      setError(errorMessage);
-
-      throw error;
     }
+  };
+
+  const logout = async () => {
+    const refreshToken = tokenStore.refresh;
+    clearSession();
+    setError(null);
+    await logoutFromAdminPortal(refreshToken);
   };
 
   const handleForgotPassword = async (email) => {
     setLoading(true);
     setError(null);
-
     try {
-      const response = await forgotPassword(email);
-
-      if (!response) {
-        const errorMessage = "Password reset failed. Please try again.";
-        setError(errorMessage);
-        setLoading(false);
-        throw new Error(errorMessage);
-      }
-
+      return await forgotPassword(email);
+    } catch (e) {
+      setError(e.message || "Failed to send password reset email.");
+      throw e;
+    } finally {
       setLoading(false);
-      return response;
-    } catch (error) {
-      console.error("Forgot password error:", error);
-      setLoading(false);
-
-      const errorMessage =
-        error.message || "Failed to send password reset email.";
-      setError(errorMessage);
-
-      throw error;
     }
   };
 
-  const logout = () => {
-    setUserData(null);
-    setToken(null);
-    setRefreshToken(null);
+  const handleResetPassword = async (resetToken, password) => {
+    setLoading(true);
     setError(null);
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
+    try {
+      return await resetPassword(resetToken, password);
+    } catch (e) {
+      setError(e.message || "Failed to reset password.");
+      throw e;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         userData,
+        role: userData?.user?.role ?? null,
+        isAuthenticated: Boolean(userData),
         token,
-        refreshToken,
         login,
         logout,
         handleForgotPassword,
+        handleResetPassword,
         loading,
         error,
         setError,

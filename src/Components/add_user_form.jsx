@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getCurrentUserRole, ROLES } from "../utils/rbac";
+import { getCurrentUserRole, ROLES, roleLabel } from "../utils/rbac";
 
 // User Form Component
 const UserForm = ({
@@ -14,7 +14,7 @@ const UserForm = ({
     lastName: initialData?.lastName || "",
     email: initialData?.email || "",
     password: initialData?.password || "",
-    role: initialData?.role || "Admin",
+    role: initialData?.role || ROLES.QR_GENERATE,
     isUserInActive: initialData?.isUserInActive || false,
     phone: initialData?.phone || "",
     createdAt: initialData?.createdAt || new Date().toISOString(),
@@ -76,7 +76,7 @@ const UserForm = ({
     }
 
     // Role validation - Updated to match the roles used in badges
-    const validRoles = ["Super Admin", "Admin", "QR Generate"];
+    const validRoles = Object.values(ROLES);
     if (!validRoles.includes(formData.role)) {
       newErrors.role = "Please select a valid role";
     }
@@ -329,12 +329,12 @@ const UserForm = ({
         >
           {currentUserRole === ROLES.SUPER_ADMIN ? (
             <>
-              <option value="Super Admin">Super Admin</option>
-              <option value="Admin">Admin</option>
-              <option value="QR Generate">QR Generate</option>
+              <option value={ROLES.SUPER_ADMIN}>{roleLabel(ROLES.SUPER_ADMIN)}</option>
+              <option value={ROLES.ADMIN}>{roleLabel(ROLES.ADMIN)}</option>
+              <option value={ROLES.QR_GENERATE}>{roleLabel(ROLES.QR_GENERATE)}</option>
             </>
           ) : (
-            <option value="QR Generate">QR Generate</option>
+            <option value={ROLES.QR_GENERATE}>{roleLabel(ROLES.QR_GENERATE)}</option>
           )}
         </select>
         {errors.role && (

@@ -2,23 +2,28 @@ import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../Context/AuthContext";
+import DataProviders from "../../Context/DataProviders";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const { logout, userData } = useAuthContext();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // for mobile
 
   const handleLogout = () => {
     setIsLoggingOut(true);
 
-    setTimeout(() => {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("user");
-      navigate("/login");
+    // Revokes the refresh token on the server and clears every stored credential.
+    setTimeout(async () => {
+      await logout();
+      navigate("/login", { replace: true });
     }, 300);
   };
 
+  // Keyed by admin so switching accounts never shows the previous admin's cached data.
   return (
+    <DataProviders key={userData?.user?.uid}>
     <div
       className={`flex h-screen bg-gray-50 transition-opacity duration-300 ${isLoggingOut ? "opacity-0" : "opacity-100"
         }`}
@@ -51,6 +56,7 @@ const AdminLayout = () => {
         </main>
       </div>
     </div>
+    </DataProviders>
   );
 };
 
