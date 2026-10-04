@@ -1,13 +1,15 @@
-export const BASE_URL = 
-// "http://localhost:2000";
-// "https://indowud-main-engine.onrender.com";
-"https://indowud-main-engine-production.up.railway.app";
+// Set VITE_API_URL per environment (see .env.example); falls back to a local backend in development.
+export const BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:2000").replace(/\/+$/, "");
 export const ENDPOINTS = {
   // Dashboard
   FETCHDASHBOARDDATA: "/api/dashboard/get-dashboard-data",
-  LOGIN: "/api/v1/auth/login",
-  GETUSERDATA: "/api/v1/auth/users/:uid",
-  FORGETPASSWORD: "/api/v1/auth/resetPassword",
+  // AUTH
+  LOGIN: "/api/admin/v1/auth/login",
+  REFRESH: "/api/admin/v1/auth/refresh",
+  LOGOUT: "/api/admin/v1/auth/logout",
+  ME: "/api/admin/v1/auth/me",
+  FORGETPASSWORD: "/api/admin/v1/auth/forgot-password",
+  RESETPASSWORD: "/api/admin/v1/auth/reset-password",
   // REDEEM
   GETALLREDEEM: "/api/v2/redeem/manage-redemption",
   CHANGEREDAMPTIONSTATUS: "/api/v2/redeem/change-redemption-status",

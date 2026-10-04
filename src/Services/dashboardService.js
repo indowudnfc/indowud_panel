@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getDashboardData() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.FETCHDASHBOARDDATA}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.FETCHDASHBOARDDATA}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getRedemptions(token) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLREDEEM}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLREDEEM}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -19,7 +20,7 @@ export async function getRedemptions(token) {
 
 export async function changeRedemptionStatus(token, id, uid, status) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CHANGEREDAMPTIONSTATUS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CHANGEREDAMPTIONSTATUS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +38,7 @@ export async function changeRedemptionStatus(token, id, uid, status) {
 
 export async function bulkChangeRedemptionStatus(token, redemptionIds, status) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.BULKCHANGEREDAMPTIONSTATUS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.BULKCHANGEREDAMPTIONSTATUS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -21,6 +21,7 @@ import { useRedemptionsContext } from "../Context/RedemptionContext";
 import Pagination from "../Components/Reusable/Pagination";
 import ConfirmationModal from "../Components/ConfirmationModal";
 import LoadingSpinner from "../Components/Reusable/LoadingSpinner";
+import { toCsv } from "../utils/csv";
 
 
 const RedemptionManagement = () => {
@@ -342,21 +343,7 @@ const RedemptionManagement = () => {
     }
 
     const dataToExport = redemptions.filter((r) => selectedRows.includes(r.id));
-    const headers = exportColumns.map((col) => col.header);
-    const csvRows = [headers.join(",")];
-
-    dataToExport.forEach((item) => {
-      const row = exportColumns.map((col) => {
-        const value = item[col.key];
-        const formattedValue = col.formatter
-          ? col.formatter(value, item)
-          : value || "";
-        return formattedValue;
-      });
-      csvRows.push(row.map((field) => `"${field}"`).join(","));
-    });
-
-    const csvContent = csvRows.join("\n");
+    const csvContent = toCsv(dataToExport, exportColumns);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);

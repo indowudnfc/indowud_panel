@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function loadSettings() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.LOADSETTINGS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.LOADSETTINGS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +25,7 @@ export async function loadSettings() {
 export async function updateRequestUsers(emailArray) {
   try {
     const payload = { requestTo: emailArray };
-    const response = await fetch(`${BASE_URL}${ENDPOINTS.UPDATEREQUESTUSERS}`, {
+    const response = await apiFetch(`${BASE_URL}${ENDPOINTS.UPDATEREQUESTUSERS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export async function updateRatioRedemptionLimit(
 ) {
   try {
     const payload = { ratio: ratioValue, limit: redemptionLimitValue };
-    const response = await fetch(
+    const response = await apiFetch(
       `${BASE_URL}${ENDPOINTS.UPDATERATIOREDEMPTIONLIMIT}`,
       {
         method: "POST",
@@ -84,7 +85,7 @@ export async function updateRatioRedemptionLimit(
 export async function removeRequestUsers(emailValue) {
   try {
     const payload = { email: emailValue };
-    const response = await fetch(`${BASE_URL}${ENDPOINTS.REMOVEREQUESTUSERS}`, {
+    const response = await apiFetch(`${BASE_URL}${ENDPOINTS.REMOVEREQUESTUSERS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +113,7 @@ export async function updateRefferalPoint(points) {
     console.log("Updating referral points, payload:", points);
 
     const payload = { points: points };
-    const response = await fetch(
+    const response = await apiFetch(
       `${BASE_URL}${ENDPOINTS.UPDATEREFERRALPOINTS}`,
       {
         method: "POST",

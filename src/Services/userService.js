@@ -1,7 +1,8 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 export async function getUsersList(token) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETUSERS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETUSERS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function getUsersList(token) {
 
 export async function createUser(token, newUserData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATEUSER}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATEUSER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +43,7 @@ export async function createUser(token, newUserData) {
 
 export async function updateUser(token, updatedUserData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.UPDATEUSER}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.UPDATEUSER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +64,7 @@ export async function updateUser(token, updatedUserData) {
 }
 export async function deleteUser(token, uid) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETEUSER}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETEUSER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +92,7 @@ export async function uploadUserData(file) {
 
     console.log("📤 Uploading file:", file.name);
 
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.IMPORTUSERSDATA}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.IMPORTUSERSDATA}`, {
       method: "POST",
       body: formData, // ✅ no headers needed for FormData
     });

@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getAllPromotions() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLPROMOTIONS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLPROMOTIONS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function getAllPromotions() {
 
 export async function createNewPromotion(promotionData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATENEWPROMOTIONS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATENEWPROMOTIONS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,7 +44,7 @@ export async function updatePromotion(promotionData = {}) {
 
     console.log("Updating promotion:", dataToSend);
 
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.UPDATEPROMOTIONS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.UPDATEPROMOTIONS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +68,7 @@ export async function updatePromotion(promotionData = {}) {
 
 export async function deletePromotion(id) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETEPROMOTIONS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETEPROMOTIONS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

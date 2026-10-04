@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getProducts() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLPRODUCTS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLPRODUCTS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function getProducts() {
 
 export async function createProduct(productData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATEPRODUCTS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATEPRODUCTS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export async function createProduct(productData) {
 export async function deleteProduct(productId) {
   try {
     const payload = { id: productId };
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETEPRODUCTS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETEPRODUCTS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +54,7 @@ export async function deleteProduct(productId) {
 
 export async function importproducts(formData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.IMPORTPRODUCTS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.IMPORTPRODUCTS}`, {
       method: "POST",
       body: formData,
     });
@@ -68,7 +69,7 @@ export async function importproducts(formData) {
 }
 export async function updateProductService(productData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.UPDATEPRODUCTS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.UPDATEPRODUCTS}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

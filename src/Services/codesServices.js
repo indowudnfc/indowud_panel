@@ -1,11 +1,12 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 // generate QR
 
 // getall batchs
 export async function getAllBatches(token) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLBATCHES}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLBATCHES}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -23,7 +24,7 @@ export async function getAllBatches(token) {
 // get batch by id
 export async function getBatchById(token, id) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETBATCHBYID}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETBATCHBYID}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +42,7 @@ export async function getBatchById(token, id) {
 
 export async function generateQR(token, qrData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GENERATEQR}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GENERATEQR}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Upload, ChevronDown } from "lucide-react";
 import { getCurrentUserRole, ROLES } from "../utils/rbac";
+import { toCsv } from "../utils/csv";
 
 const ExportButton = ({
   data = [],
@@ -52,21 +53,7 @@ const ExportButton = ({
       return;
     }
 
-    const headers = columns.map((col) => col.header);
-    const csvRows = [headers.join(",")];
-
-    data.forEach((item) => {
-      const row = columns.map((col) => {
-        const value = item[col.key];
-        const formattedValue = col.formatter
-          ? col.formatter(value, item)
-          : value || "";
-        return formattedValue;
-      });
-      csvRows.push(row.map((field) => `"${field}"`).join(","));
-    });
-
-    const csvContent = csvRows.join("\n");
+    const csvContent = toCsv(data, columns);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);

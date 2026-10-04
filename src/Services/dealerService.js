@@ -1,7 +1,8 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig";
+import { apiFetch } from "./apiClient.js";
 export async function getDealers(token) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLDEALERS}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLDEALERS}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function getDealers(token) {
 
 export async function createDealer(token, dealerData) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATENEWDEALER}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATENEWDEALER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export async function createDealer(token, dealerData) {
 
 export async function deleteDealer(token, id) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETEDEALER}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETEDEALER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export async function deleteDealer(token, id) {
 
 export async function generateDealerId() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GENERATEDEALERID}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GENERATEDEALERID}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +74,7 @@ export async function importDealersData(file) {
   try {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.IMPORTDEALERSDATA}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.IMPORTDEALERSDATA}`, {
       method: "POST",
       body: formData,
     });

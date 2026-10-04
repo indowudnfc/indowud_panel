@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useAuthContext } from "../../Context/AuthContext";
+import { ROLES } from "../../utils/rbac";
 import "./Sidebar.css";
 import logo_icon from "../../assets/Icon_Indowud.png";
 import { X, LogOut } from "lucide-react";
@@ -21,10 +22,7 @@ import {
 } from "lucide-react";
 
 const Sidebar = ({ onLogout, onClose }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const user = JSON.parse(localStorage.getItem("user"));
-  const role = user?.role || user?.user?.role || "Guest";
+  const { role } = useAuthContext();
 
   // ==== MENU CONFIG ====
   const allMenuItems = [
@@ -45,7 +43,7 @@ const Sidebar = ({ onLogout, onClose }) => {
       items: [
         { name: "Products", icon: Package, path: "/products" },
         { name: "QR Generation", icon: QrCode, path: "/qr" },
-        { name: "QR Track", icon: MapPin, path: "/Track" },
+        { name: "QR Track", icon: MapPin, path: "/track" },
         { name: "Catalogue", icon: BookOpen, path: "/catalogue" },
         { name: "Bonus Promotion", icon: BadgePercent, path: "/promotions" },
         { name: "Manage Redemption", icon: Coins, path: "/redemption" },
@@ -64,15 +62,15 @@ const Sidebar = ({ onLogout, onClose }) => {
 
   // ==== ROLE PERMISSIONS ====
   const rolePermissions = {
-    Admin: ["*"], // Full access
-    "Super Admin": ["*"], // Full access
-    "QR Generate": ["Dealers", "Products", "QR Generation"], // Restricted
+    [ROLES.SUPER_ADMIN]: ["*"],
+    [ROLES.ADMIN]: ["*"],
+    [ROLES.QR_GENERATE]: ["Dealers", "Products", "QR Generation"],
   };
 
   const allowed = rolePermissions[role] || [];
 
   // ==== FILTER MENU BASED ON ROLE ====
-  let filteredMenu = allMenuItems
+  const filteredMenu = allMenuItems
     .map((menu) => ({
       ...menu,
       items: menu.items.filter(
@@ -81,18 +79,8 @@ const Sidebar = ({ onLogout, onClose }) => {
     }))
     .filter((menu) => menu.items.length > 0);
 
-  // Fallback: Show all if misconfigured role
-  if (filteredMenu.length === 0) {
-    console.warn(`⚠️ No menu found for role: "${role}". Showing all menus.`);
-    filteredMenu = allMenuItems;
-  }
-
-  // ==== AUTO-REDIRECT QR GENERATE USERS ====
-  useEffect(() => {
-    if (role === "QR Generate" && location.pathname === "/dashboard") {
-      navigate("/qr", { replace: true }); // ✅ fixed route
-    }
-  }, [role, navigate, location.pathname]);
+  // An unknown role sees nothing (it used to see everything).
+  // QR Generate users landing on /dashboard are redirected by the route guard.
 
   return (
     <aside className="relative w-64 bg-white shadow-xl border-r border-gray-200 flex flex-col h-full transition-all duration-300">

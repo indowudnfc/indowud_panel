@@ -13,6 +13,7 @@ export const TrackQRDataProvider = ({ children }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({});
 
   const fetchQRData = async (currentPage) => {
     if (!token) return;
@@ -20,7 +21,7 @@ export const TrackQRDataProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getAllQRData(token, currentPage);
+      const response = await getAllQRData(token, currentPage, filters);
 
       const qrCodes = response?.qrCodes?.qrCodes || [];
       const pages = response?.qrCodes?.totalPages || 1;
@@ -28,13 +29,8 @@ export const TrackQRDataProvider = ({ children }) => {
 
       const transformedQrCodes = qrCodes.map((qr) => ({
         ...qr,
-        location:
-          qr.lon && qr.lat
-            ? {
-                lng: qr.lon,
-                lat: qr.lat,
-              }
-            : null,
+        // The API sends { lat, lng }; older records stored lat/lon on the code itself.
+        location: qr.location ?? (qr.lon && qr.lat ? { lng: qr.lon, lat: qr.lat } : null),
       }));
 
       setQRData(transformedQrCodes);
@@ -64,13 +60,8 @@ export const TrackQRDataProvider = ({ children }) => {
 
       const transformedQrCodes = qrCodes.map((qr) => ({
         ...qr,
-        location:
-          qr.lon && qr.lat
-            ? {
-                lng: qr.lon,
-                lat: qr.lat,
-              }
-            : null,
+        // The API sends { lat, lng }; older records stored lat/lon on the code itself.
+        location: qr.location ?? (qr.lon && qr.lat ? { lng: qr.lon, lat: qr.lat } : null),
       }));
 
       setQRData(transformedQrCodes);
@@ -91,7 +82,7 @@ export const TrackQRDataProvider = ({ children }) => {
     if (!searchQuery) {
       fetchQRData(page);
     }
-  }, [token, page, searchQuery]);
+  }, [token, page, searchQuery, filters]);
 
   return (
     <TrackQRDataContext.Provider
@@ -106,6 +97,8 @@ export const TrackQRDataProvider = ({ children }) => {
         fetchQRData,
         searchQRData,
         setSearchQuery,
+        filters,
+        setFilters,
       }}
     >
       {children}

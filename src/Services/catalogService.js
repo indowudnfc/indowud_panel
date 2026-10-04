@@ -1,8 +1,9 @@
 import { BASE_URL, ENDPOINTS } from "../Config/apiConfig.js";
+import { apiFetch } from "./apiClient.js";
 
 export async function getAllCatalogues() {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.GETALLCATALOGUES}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.GETALLCATALOGUES}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +26,7 @@ export async function createCatalogue(token, catalogueData) {
       formData.append("pdf", catalogueData.pdf);
     }
 
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.CREATECATALOGUE}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.CREATECATALOGUE}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -42,7 +43,7 @@ export async function createCatalogue(token, catalogueData) {
 
 export async function deleteCatalogue(token, catalogueId) {
   try {
-    const res = await fetch(`${BASE_URL}${ENDPOINTS.DELETECATALOGUE}`, {
+    const res = await apiFetch(`${BASE_URL}${ENDPOINTS.DELETECATALOGUE}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useMemo } from "react";
+import { useState, useEffect, useContext } from "react";
 import { MapPin, X, Loader2, EyeIcon, RefreshCw, Search, ChevronUp, ChevronDown } from "lucide-react";
 import { useTrackQRData } from "../Context/TrackQRDataContext";
 
@@ -14,6 +14,7 @@ const QRTrack = () => {
     fetchQRData,
     searchQRData,
     setSearchQuery: setContextSearchQuery,
+    setFilters,
   } = useTrackQRData();
 
   const [dateFilter, setDateFilter] = useState("all");
@@ -26,47 +27,28 @@ const QRTrack = () => {
   const [localSearchQuery, setLocalSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  const filteredQrData = useMemo(() => {
-    let data = [...qrData];
-
+  // Date filters run on the server across all pages (they used to filter only the 10 rows on screen).
+  // Ranges are built in the browser's local time (IST for admins); "to" includes the whole end day.
+  useEffect(() => {
+    const startOfDay = (ymd) => {
+      const [y, m, d] = ymd.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    };
     const now = new Date();
-
-    if (dateFilter === "today") {
-      data = data.filter(item =>
-        new Date(item.createdAt).toDateString() === now.toDateString()
-      );
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let range = {};
+    if (dateFilter === "today") range = { from: today };
+    if (dateFilter === "week") range = { from: new Date(today.getTime() - 6 * 864e5) };
+    if (dateFilter === "month") range = { from: new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()) };
+    if (dateFilter === "custom" && customRange.from && customRange.to && customRange.from <= customRange.to) {
+      const end = startOfDay(customRange.to);
+      range = { from: startOfDay(customRange.from), to: new Date(end.getFullYear(), end.getMonth(), end.getDate() + 1) };
     }
+    setFilters({ from: range.from?.toISOString(), to: range.to?.toISOString() });
+    setPage(1);
+  }, [dateFilter, customRange, setFilters, setPage]);
 
-    if (dateFilter === "week") {
-      const weekAgo = new Date();
-      weekAgo.setDate(now.getDate() - 7);
-
-      data = data.filter(item =>
-        new Date(item.createdAt) >= weekAgo
-      );
-    }
-
-    if (dateFilter === "month") {
-      const monthAgo = new Date();
-      monthAgo.setMonth(now.getMonth() - 1);
-
-      data = data.filter(item =>
-        new Date(item.createdAt) >= monthAgo
-      );
-    }
-
-    if (dateFilter === "custom" && customRange.from && customRange.to) {
-      data = data.filter(item => {
-        const date = new Date(item.createdAt);
-        return (
-          date >= new Date(customRange.from) &&
-          date <= new Date(customRange.to)
-        );
-      });
-    }
-
-    return data;
-  }, [qrData, dateFilter, customRange]);
+  const filteredQrData = qrData;
   const requestSort = (key) => {
     if (!key) return;
     let direction = 'asc';
@@ -154,8 +136,8 @@ const QRTrack = () => {
 
   // Calculate showing range
   const pageSize = 10;
-  const showingStart = filteredQrData.length > 0 > 0 ? (page - 1) * pageSize + 1 : 0;
-  const showingEnd = (page - 1) * pageSize + filteredQrData.length > 0;
+  const showingStart = filteredQrData.length > 0 ? (page - 1) * pageSize + 1 : 0;
+  const showingEnd = (page - 1) * pageSize + filteredQrData.length;
   const displayTotal = totalItems || totalPages * pageSize;
 
   return (
